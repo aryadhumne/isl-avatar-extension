@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="popup.css"><title>ISL Avatar</title></head>
+<body>
+  <h1>ISL avatar</h1>
+  <p class="sub">Shows captions as Indian Sign Language signs.</p>
+  <button id="toggle">Show avatar on this page</button>
+  <p id="msg" class="msg" role="status"></p>
+  <label>Text source
+    <select id="source"><option value="captions">Page captions</option><option value="typed">Typed text only</option></select>
+  </label>
+  <label>Signing speed <output id="speedOut">1.0x</output>
+    <input id="speed" type="range" min="0.5" max="2" step="0.1" value="1">
+  </label>
+  <script src="popup.js"></script>
+</body></html>

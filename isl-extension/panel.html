@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="panel.css"><title>ISL Avatar</title></head>
+<body>
+  <div class="stage"><canvas id="stage"></canvas></div>
+  <p id="status" class="status" role="status">Loading avatar…</p>
+  <section class="now-wrap" aria-live="polite">
+    <div id="now" data-kind="idle">Ready</div>
+    <div id="chips" class="chips"></div>
+    <p id="caption" class="caption">Turn on captions (CC) in the video, or type a sentence below.</p>
+  </section>
+  <form id="form" class="row">
+    <input id="text" type="text" autocomplete="off" placeholder="Type a sentence to sign" aria-label="Sentence to sign">
+    <button type="submit">Sign</button>
+  </form>
+  <select id="demo" aria-label="Demo sentences">
+    <option value="">Try a demo sentence</option>
+    <option>Hello, my name is Rahul.</option>
+    <option>I am going to school.</option>
+    <option>I want to drink water.</option>
+    <option>My father works in an office.</option>
+    <option>I am learning computer science.</option>
+    <option>I want to visit Pune.</option>
+  </select>
+  <script src="dist/panel.js"></script>
+</body></html>
