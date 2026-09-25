@@ -1,9 +1,75 @@
-body{margin:0;width:280px;padding:16px;background:#1B2D38;color:#EAF1EE;font:13px/1.4 "Segoe UI Variable","Noto Sans",system-ui,sans-serif}
-h1{margin:0;font-size:18px}.sub{margin:2px 0 14px;color:#93A8A6}
-button{width:100%;padding:9px;border:0;border-radius:8px;background:#F4A62A;color:#12202A;font:600 13px inherit;cursor:pointer}
-label{display:block;margin-top:14px;color:#93A8A6}
-select,input{display:block;width:100%;margin-top:6px;font:inherit;color:#EAF1EE;background:#12202A;border:1px solid #2E4653;border-radius:8px;padding:6px 8px}
-input[type=range]{padding:0;accent-color:#F4A62A}
-output{float:right;color:#EAF1EE}
-.msg{min-height:16px;margin:8px 0 0;color:#F4A62A;font-size:12px}
-:focus-visible{outline:2px solid #F4A62A;outline-offset:2px}
+:root {
+  --panel: #0D0F18;
+  --text: #EEF0F8;
+  --muted: #9AA3B8;
+  --accent: #7C9CFF;
+  --accent-2: #B39BFF;
+  --accent-glow: rgba(124, 156, 255, 0.35);
+  --line: rgba(255, 255, 255, 0.1);
+  --ink: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  margin: 0;
+  width: 280px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--accent) 18%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--accent-2) 14%, transparent) 0%, transparent 55%),
+    var(--panel);
+  color: var(--text);
+  font: 13px/1.4 -apple-system, "Segoe UI Variable", BlinkMacSystemFont, "Noto Sans", system-ui, sans-serif;
+}
+
+h1 {
+  margin: 0;
+  font-size: 18px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sub { margin: 2px 0 14px; color: var(--muted); }
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0A0D14;
+  font: 700 13px inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 18px var(--accent-glow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+button:hover { filter: brightness(1.08); box-shadow: 0 8px 22px var(--accent-glow); transform: translateY(-1px); }
+button:active { transform: translateY(0) scale(0.98); }
+
+label { display: block; margin-top: 14px; color: var(--muted); }
+
+select, input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  font: inherit;
+  color: var(--text);
+  background: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  backdrop-filter: blur(10px);
+}
+select:focus, input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+input[type=range] { padding: 0; accent-color: var(--accent); }
+output { float: right; color: var(--text); }
+
+.msg { min-height: 16px; margin: 8px 0 0; color: var(--accent); font-size: 12px; }
+
+:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-glow); }

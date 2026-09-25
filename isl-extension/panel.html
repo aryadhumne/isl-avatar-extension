@@ -1,18 +1,52 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="panel.css"><title>ISL Avatar</title></head>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISL Avatar</title>
+  <link rel="stylesheet" href="panel.css">
+  <script>
+    /* Immediate theme initialization to prevent flash */
+    (function() {
+      try {
+        const saved = localStorage.getItem('isl-theme') || 
+          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', saved);
+      } catch(e) {}
+    })();
+  </script>
+</head>
 <body>
-  <div class="stage"><canvas id="stage"></canvas></div>
+
+  <!-- Theme Toggle (Moon / Sun) -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" type="button" title="Toggle dark mode">
+    <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"></path>
+    </svg>
+  </button>
+
+  <!-- 3D Hand Stage (Bright White & Curved) -->
+  <div class="stage">
+    <canvas id="stage"></canvas>
+  </div>
+
+  <!-- Status Bar (Curved) -->
   <p id="status" class="status" role="status">Loading avatar…</p>
+
+  <!-- Now Signing & Captions (Curved) -->
   <section class="now-wrap" aria-live="polite">
     <div id="now" data-kind="idle">Ready</div>
     <div id="chips" class="chips"></div>
     <p id="caption" class="caption">Turn on captions (CC) in the video, or type a sentence below.</p>
   </section>
+
+  <!-- Text Input Form (Curved) -->
   <form id="form" class="row">
     <input id="text" type="text" autocomplete="off" placeholder="Type a sentence to sign" aria-label="Sentence to sign">
     <button type="submit">Sign</button>
   </form>
+
+  <!-- Demo Sentences Dropdown (Curved) -->
   <select id="demo" aria-label="Demo sentences">
     <option value="">Try a demo sentence</option>
     <option>Hello, my name is Rahul.</option>
@@ -22,5 +56,45 @@
     <option>I am learning computer science.</option>
     <option>I want to visit Pune.</option>
   </select>
+
+  <!-- Inlined Theme Script -->
+  <script>
+    (function() {
+      const root = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+
+      const sunPath = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+      const moonPath = '<path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>';
+
+      function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        if (themeIcon) themeIcon.innerHTML = theme === 'dark' ? sunPath : moonPath;
+        if (themeToggle) themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        try { localStorage.setItem('isl-theme', theme); } catch(e) {}
+        if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+          chrome.storage.sync.set({ theme: theme }).catch(() => {});
+        }
+        try {
+          window.parent.postMessage({ source: 'isl-panel', type: 'theme', theme: theme }, '*');
+        } catch(e) {}
+      }
+
+      function toggleTheme() {
+        const current = root.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+      }
+
+      if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+
+      const initialTheme = root.getAttribute('data-theme') || 'light';
+      applyTheme(initialTheme);
+    })();
+  </script>
+
+  <!-- External Project Scripts -->
+  <script src="theme.js"></script>
   <script src="dist/panel.js"></script>
-</body></html>
+</body>
+</html>
