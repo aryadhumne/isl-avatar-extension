@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const norm = n => n.toUpperCase().replace(/[\s-]+/g, '_');
+
+// Her clip names (Hello_default, One_Action, ...) -> names the app asks for (HELLO, 1, ...)
+const NUM = { ZERO: '0', ONE: '1', TWO: '2', THREE: '3', FOUR: '4', FIVE: '5', SIX: '6', SEVEN: '7', EIGHT: '8', NINE: '9' };
+const clean = n => { const k = norm(n).replace(/_(ACTION|DEFAULT)$/, ''); return NUM[k] || k; };
+
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 function rng(str) {
   let h = 1779033703 ^ str.length;
@@ -12,6 +17,7 @@ function rng(str) {
 export class Avatar {
   constructor(canvas) {
     this.canvas = canvas; this.mode = 'none'; this.clips = new Map();
+    this.ready = new Promise(r => { this._done = r; });
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.scene = new THREE.Scene();
@@ -37,17 +43,26 @@ export class Avatar {
       const gltf = await new GLTFLoader().loadAsync(url);
       this.scene.add(gltf.scene);
       const box = new THREE.Box3().setFromObject(gltf.scene), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
-      const dist = (Math.max(size.y, size.x / this.camera.aspect) / 2) / Math.tan(THREE.MathUtils.degToRad(17.5)) * 1.25;
-      this.camera.position.set(c.x, c.y, c.z + dist); this.camera.lookAt(c);
+      // Upper body only: frame from the waist up. WAIST = fraction of body height where we cut (0.5 = waist; lower number shows more).
+      const WAIST = 0.5, top = box.max.y, waistY = box.min.y + size.y * WAIST, midY = (top + waistY) / 2;
+      const need = Math.max((top - waistY) * 1.1, (size.x * 0.6) / this.camera.aspect);
+      const dist = (need / 2) / Math.tan(THREE.MathUtils.degToRad(17.5));
+      this.camera.position.set(c.x, midY, c.z + dist); this.camera.lookAt(c.x, midY, c.z);
       this.mixer = new THREE.AnimationMixer(gltf.scene);
-      gltf.animations.forEach(a => this.clips.set(norm(a.name), a));
+      gltf.animations.forEach(a => this.clips.set(clean(a.name), a));
+      console.log('[avatar] clips loaded:', [...this.clips.keys()].join(', ') || 'NONE');
       this.mode = 'glb';
-    } catch { this.buildPlaceholder(); this.mode = 'placeholder'; }
+    } catch (e) {
+      console.error('[avatar] GLB load failed, using placeholder hands:', e);
+      this.buildPlaceholder(); this.mode = 'placeholder';
+    }
+    this._done(this.mode);
     return this.mode;
   }
   has(clip) { return this.mode === 'placeholder' || this.clips.has(norm(clip)); }
 
-  play(clip, speed = 1, kind = 'word') {
+  async play(clip, speed = 1, kind = 'word') {
+    if (this.mode === 'none') await this.ready;
     return this.mode === 'glb' ? this.playClip(clip, speed) : this.playPlaceholder(clip, speed, kind);
   }
   async playClip(name, speed) {
@@ -97,6 +112,7 @@ export class Avatar {
     };
   }
   async playPlaceholder(name, speed, kind) {
+    if (!this.hands) this.buildPlaceholder();
     const r = rng(name);
     this.hands.forEach(h => {
       h.tgt.pos = [h.sgn * (0.55 + r() * 0.5), -0.2 + r() * 0.9, r() * 0.4];
