@@ -38,16 +38,39 @@ export class Avatar {
     const { clientWidth: w, clientHeight: h } = this.canvas.parentElement;
     this.renderer.setSize(w, h, false); this.camera.aspect = w / h; this.camera.updateProjectionMatrix();
   }
+  lowerArms(root) {
+    root.updateMatrixWorld(true);
+    const re = /upper_?arm/i, bones = [];
+    root.traverse(o => { if (o.isBone && re.test(o.name) && !(o.parent && re.test(o.parent.name))) bones.push(o); });
+    for (const b of bones) {
+      const kid = b.children.find(k => k.isBone); if (!kid) continue;
+      const p = b.getWorldPosition(new THREE.Vector3()), q = kid.getWorldPosition(new THREE.Vector3());
+      const dir = q.sub(p).normalize();
+      const target = new THREE.Vector3(Math.sign(dir.x) * 0.3, -1, 0).normalize();
+      const delta = new THREE.Quaternion().setFromUnitVectors(dir, target);
+      const bw = b.getWorldQuaternion(new THREE.Quaternion());
+      const pw = b.parent.getWorldQuaternion(new THREE.Quaternion());
+      b.quaternion.copy(pw.invert().multiply(delta).multiply(bw));
+      b.updateMatrixWorld(true);
+    }
+    console.log('[avatar] arms lowered:', bones.length);
+    return bones.length;
+  }
   async load(url) {
     try {
       const gltf = await new GLTFLoader().loadAsync(url);
       this.scene.add(gltf.scene);
+      // 1) Idle pose: bring the arms down (the file is in a T-pose), so the model is narrow and can be zoomed in.
+      this.lowerArms(gltf.scene);
+      gltf.scene.traverse(o => { if (o.isSkinnedMesh) { o.skeleton.update(); o.computeBoundingBox(); } });
+      // 2) Frame the upper body: centred, cut at the waist.
       const box = new THREE.Box3().setFromObject(gltf.scene), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
-      // Upper body only: frame from the waist up. WAIST = fraction of body height where we cut (0.5 = waist; lower number shows more).
-      const WAIST = 0.5, top = box.max.y, waistY = box.min.y + size.y * WAIST, midY = (top + waistY) / 2;
-      const need = Math.max((top - waistY) * 1.1, (size.x * 0.6) / this.camera.aspect);
-      const dist = (need / 2) / Math.tan(THREE.MathUtils.degToRad(17.5));
-      this.camera.position.set(c.x, midY, c.z + dist); this.camera.lookAt(c.x, midY, c.z);
+      const WAIST = 0.42, top = box.max.y, waistY = box.min.y + size.y * WAIST;
+      this.renderer.clippingPlanes = [new THREE.Plane(new THREE.Vector3(0, 1, 0), -waistY)];
+      const visH = Math.max((top - waistY) * 1.15, (size.x * 1.2) / this.camera.aspect);
+      const dist = (visH / 2) / Math.tan(THREE.MathUtils.degToRad(17.5));
+      const camY = (top + waistY) / 2;
+      this.camera.position.set(c.x, camY, c.z + dist); this.camera.lookAt(c.x, camY, c.z);
       this.mixer = new THREE.AnimationMixer(gltf.scene);
       gltf.animations.forEach(a => this.clips.set(clean(a.name), a));
       console.log('[avatar] clips loaded:', [...this.clips.keys()].join(', ') || 'NONE');
