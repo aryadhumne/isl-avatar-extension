@@ -50,9 +50,9 @@
 | Symbol | Feature | Description |
 |:---:|---|---|
 | &#9998; | **Select and Sign** | Highlight any text on a page and watch the avatar sign it |
-| &#9202; | **Speech Input** | Speak a sentence and get it signed in real time |
+| &#9205; | **Speech Input** | Speak a sentence and get it signed in real time |
 | &#9673; | **3D Avatar** | Smooth, lightweight avatar rendered in the browser |
-| &#9201; | **Speed Control** | Slow down or speed up signing to match the learner |
+| &#9022; | **Speed Control** | Slow down or speed up signing to match the learner |
 | &#8635; | **Replay and Loop** | Re-watch any sign as many times as needed |
 | &#10003; | **No Wrong Signs** | Words without a validated sign are flagged instead of guessed |
 
