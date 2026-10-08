@@ -121,7 +121,7 @@ Then load it into your browser:
 > After installing or updating the extension, reload any open tabs so the content script is injected.
 
 <details>
-<summary><b>&#9656; Troubleshooting</b></summary>
+<summary><b> Troubleshooting</b></summary>
 
 <br/>
 
@@ -273,13 +273,13 @@ Contributions are very welcome, especially from **ISL users, signers and interpr
 
 ---
 
-<!--## License
+<!--## License-->
 
 <!-- EDIT: confirm the license and add a LICENSE file -->
-Distributed under the MIT License. See `LICENSE` for details.
+<!--Distributed under the MIT License. See `LICENSE` for details.-->
 
 ---
--->
+
 ## Acknowledgements
 
 <!-- EDIT: credit datasets, libraries, mentors, teammates 
