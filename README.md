@@ -50,16 +50,16 @@
 | Symbol | Feature | Description |
 |:---:|---|---|
 | &#9998; | **Select and Sign** | Highlight any text on a page and watch the avatar sign it |
-| &#9654; | **Speech Input** | Speak a sentence and get it signed in real time |
+| &#9205; | **Speech Input** | Speak a sentence and get it signed in real time |
 | &#9673; | **3D Avatar** | Smooth, lightweight avatar rendered in the browser |
-| &#x23F1; | **Speed Control** | Slow down or speed up signing to match the learner |
+| &#9201; | **Speed Control** | Slow down or speed up signing to match the learner |
 | &#8635; | **Replay and Loop** | Re-watch any sign as many times as needed |
 | &#10003; | **No Wrong Signs** | Words without a validated sign are flagged instead of guessed |
 
 <!-- EDIT: keep only the features that are true for your project -->
 
 <details>
-<summary><b>&#9656; Planned and experimental features</b></summary>
+<summary><b> Planned and experimental features</b></summary>
 
 <br/>
 
