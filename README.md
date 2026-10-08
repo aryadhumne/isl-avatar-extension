@@ -52,7 +52,7 @@
 | &#9998; | **Select and Sign** | Highlight any text on a page and watch the avatar sign it |
 | &#9654; | **Speech Input** | Speak a sentence and get it signed in real time |
 | &#9673; | **3D Avatar** | Smooth, lightweight avatar rendered in the browser |
-| &#9201; | **Speed Control** | Slow down or speed up signing to match the learner |
+| &#x23F1; | **Speed Control** | Slow down or speed up signing to match the learner |
 | &#8635; | **Replay and Loop** | Re-watch any sign as many times as needed |
 | &#10003; | **No Wrong Signs** | Words without a validated sign are flagged instead of guessed |
 
@@ -231,7 +231,7 @@ No. ISL has its own grammar and structure, which differs from English word order
 </details>
 
 <details>
-<summary><b>&#9656; What if a word has no sign?</b></summary>
+<summary><b> What if a word has no sign?</b></summary>
 
 <br/>
 
@@ -240,7 +240,7 @@ The extension flags it rather than showing an unrelated sign, so users are never
 </details>
 
 <details>
-<summary><b>&#9656; Does it send my text anywhere?</b></summary>
+<summary><b> Does it send my text anywhere?</b></summary>
 
 <br/>
 
@@ -250,7 +250,7 @@ Describe here whether processing happens locally in the browser or through an ex
 </details>
 
 <details>
-<summary><b>&#9656; Which browsers are supported?</b></summary>
+<summary><b> Which browsers are supported?</b></summary>
 
 <br/>
 
