@@ -222,7 +222,7 @@ isl-avatar-extension/
 ## FAQ
 
 <details>
-<summary><b>&#9656; Is this a full ISL translator?</b></summary>
+<summary><b> Is this a full ISL translator?</b></summary>
 
 <br/>
 
