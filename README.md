@@ -50,7 +50,7 @@
 | Symbol | Feature | Description |
 |:---:|---|---|
 | &#9998; | **Select and Sign** | Highlight any text on a page and watch the avatar sign it |
-| &#9205; | **Speech Input** | Speak a sentence and get it signed in real time |
+| &#9202; | **Speech Input** | Speak a sentence and get it signed in real time |
 | &#9673; | **3D Avatar** | Smooth, lightweight avatar rendered in the browser |
 | &#9201; | **Speed Control** | Slow down or speed up signing to match the learner |
 | &#8635; | **Replay and Loop** | Re-watch any sign as many times as needed |
@@ -81,7 +81,7 @@
 | [Try it &rarr;](#) | [Watch &rarr;](#) | [View &rarr;](#) |
 
 <details>
-<summary><b>&#9656; Screenshots</b></summary>
+<summary><b> Screenshots</b></summary>
 
 <br/>
 
@@ -156,7 +156,7 @@ flowchart LR
 4. **Animation:** matched signs are played back by the avatar one after another.
 
 <details>
-<summary><b>&#9656; Deeper technical notes</b></summary>
+<summary><b> Deeper technical notes</b></summary>
 
 <br/>
 
@@ -273,17 +273,17 @@ Contributions are very welcome, especially from **ISL users, signers and interpr
 
 ---
 
-## License
+<!--## License
 
 <!-- EDIT: confirm the license and add a LICENSE file -->
 Distributed under the MIT License. See `LICENSE` for details.
 
 ---
-
+-->
 ## Acknowledgements
 
-<!-- EDIT: credit datasets, libraries, mentors, teammates -->
-- ISL community members and signers who guide accuracy
+<!-- EDIT: credit datasets, libraries, mentors, teammates 
+- ISL community members and signers who guide accuracy -->
 - Open-source libraries powering the avatar and the extension
 - Teammates and mentors
 
