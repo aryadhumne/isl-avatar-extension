@@ -40,6 +40,12 @@
   --close-fg: #12597F;
   --focus: rgba(23, 162, 208, 0.45);
 
+  /* ===== Stage texture colors (light) ===== */
+  --bg-base: #BFD9E8;
+  --bg-a: rgba(23, 162, 208, 0.85);
+  --bg-b: rgba(120, 90, 220, 0.55);
+  --bg-c: rgba(26, 107, 150, 0.6);
+
   --blur: blur(18px) saturate(1.5);
 
   --font: "Sarabun", "Prompt", "Segoe UI Variable", -apple-system, BlinkMacSystemFont, "Noto Sans", system-ui, sans-serif;
@@ -76,6 +82,12 @@
   --close-bg: rgba(255, 255, 255, 0.08);
   --close-fg: #E8F0F4;
   --focus: rgba(185, 211, 223, 0.5);
+
+  /* ===== Stage texture colors (dark) ===== */
+  --bg-base: #040B2A;
+  --bg-a: rgba(31, 111, 168, 0.9);
+  --bg-b: rgba(122, 15, 176, 0.75);
+  --bg-c: rgba(20, 60, 140, 0.8);
 }
 
 * { box-sizing: border-box; }
@@ -170,10 +182,31 @@ body {
   overflow: hidden;
   border-radius: calc(26 * var(--u));
   border: 1.5px solid var(--stage-border);
-  background: linear-gradient(180deg, var(--stage-top) 0%, var(--stage-bottom) 100%);
+  background: var(--bg-base);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 0 30px rgba(255, 255, 255, 0.08);
   isolation: isolate;
   contain: paint;
+}
+
+/* Moving background animation */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 20% 25%, var(--bg-a), transparent 45%),
+    radial-gradient(circle at 80% 70%, var(--bg-b), transparent 50%),
+    radial-gradient(circle at 60% 15%, var(--bg-c), transparent 40%),
+    var(--bg-base);
+  animation: bgFlow 7s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes bgFlow {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50%  { transform: translate(6%, -5%) rotate(8deg) scale(1.12); }
+  100% { transform: translate(-6%, 5%) rotate(-8deg) scale(1.05); }
 }
 
 canvas {

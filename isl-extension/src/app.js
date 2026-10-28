@@ -17,37 +17,66 @@ function renderChips(signs) {
   for (const s of signs) {
     s.el = document.createElement('span');
     s.el.textContent = s.label.replace('_', ' ');
-    if (s.kind === 'word') { s.el.className = 'chip'; box.append(s.el); group = null; continue; }
-    if (s.group !== group) { wrap = document.createElement('span'); wrap.className = 'spell'; wrap.title = 'Fingerspelled'; box.append(wrap); group = s.group; }
-    s.el.className = 'letter'; wrap.append(s.el);
+    if (s.kind === 'word' || s.kind === 'digit') {
+      s.el.className = 'chip';
+      box.append(s.el);
+      group = null;
+      continue;
+    }
+    if (s.group !== group) {
+      wrap = document.createElement('span');
+      wrap.className = 'spell';
+      wrap.title = 'Fingerspelled';
+      box.append(wrap);
+      group = s.group;
+    }
+    s.el.className = 'letter';
+    wrap.append(s.el);
   }
 }
 
 function submit(text) {
-  text = text.trim(); if (!text) return;
+  text = text.trim();
+  if (!text) return;
   const { signs } = textToSigns(text);
   $('#caption').textContent = text;
   if (!signs.length) return;
-  renderChips(signs); queue.push(...signs);
+  renderChips(signs);
+  queue.push(...signs);
   if (queue.length > 60) queue.splice(0, queue.length - 60);
   pump();
 }
 
 async function pump() {
-  if (busy) return; busy = true;
+  if (busy) return;
+  busy = true;
   while (queue.length) {
     const s = queue.shift();
     s.el?.classList.add('on');
     $('#now').textContent = s.label.replace('_', ' ');
     $('#now').dataset.kind = s.kind;
-    await avatar.play(s.clip, settings.speed * (queue.length > 10 ? 1.6 : 1), s.kind);
-    s.el?.classList.remove('on'); s.el?.classList.add('done');
+    // Scale speed dynamically so avatar stays in sync with video captions
+    const queueBoost = queue.length > 3 ? 1.7 : (queue.length > 0 ? 1.4 : 1.25);
+    await avatar.play(s.clip, settings.speed * queueBoost, s.kind);
+    s.el?.classList.remove('on');
+    s.el?.classList.add('done');
   }
-  busy = false; $('#now').textContent = 'Ready'; $('#now').dataset.kind = 'idle';
+  busy = false;
+  $('#now').textContent = 'Ready';
+  $('#now').dataset.kind = 'idle';
+  avatar.resetRestPose();
 }
 
-$('#form').addEventListener('submit', e => { e.preventDefault(); submit($('#text').value); $('#text').value = ''; });
-$('#demo').addEventListener('change', e => { if (e.target.value) submit(e.target.value); e.target.value = ''; });
+$('#form').addEventListener('submit', e => {
+  e.preventDefault();
+  submit($('#text').value);
+  $('#text').value = '';
+});
+
+$('#demo').addEventListener('change', e => {
+  if (e.target.value) submit(e.target.value);
+  e.target.value = '';
+});
 
 window.addEventListener('message', e => {
   if (e.source !== window.parent || e.data?.source !== 'isl-ext') return;

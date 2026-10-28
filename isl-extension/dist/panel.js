@@ -1,112 +1,61 @@
 (() => {
   // src/isl.js
-  var VOCAB = [
-    "HELLO",
-    "THANK_YOU",
-    "PLEASE",
-    "SORRY",
-    "YES",
-    "NO",
-    "NOT",
-    "HELP",
-    "I",
-    "YOU",
-    "MY",
-    "NAME",
-    "FATHER",
-    "MOTHER",
-    "FRIEND",
-    "TEACHER",
-    "STUDENT",
-    "HAVE",
-    "WANT",
-    "GO",
-    "COME",
-    "SEE",
-    "LIKE",
-    "LOVE",
-    "LEARN",
-    "WORK",
-    "EAT",
-    "DRINK",
-    "VISIT",
-    "SCHOOL",
-    "OFFICE",
-    "HOME",
-    "COMPUTER",
-    "SCIENCE",
-    "BOOK",
-    "WATER",
-    "FOOD",
-    "GOOD",
-    "MORNING",
-    "TODAY",
-    "TOMORROW",
-    "WHAT",
-    "WHERE",
-    "HOW",
-    "WHY"
-  ];
-  var V = new Set(VOCAB);
-  var STOP = new Set("is am are was were be been being to the a an of at in on for with and or that this it as by from do does did will would".split(" "));
-  var IRREGULAR = {
-    me: "I",
-    i: "I",
-    mine: "MY",
-    went: "GO",
-    gone: "GO",
-    goes: "GO",
-    ate: "EAT",
-    drank: "DRINK",
-    saw: "SEE",
-    came: "COME",
-    thanks: "THANK_YOU"
+  var WORD_TO_NUM = {
+    zero: "0",
+    "0": "0",
+    one: "1",
+    first: "1",
+    "1": "1",
+    two: "2",
+    second: "2",
+    "2": "2",
+    three: "3",
+    third: "3",
+    "3": "3",
+    four: "4",
+    fourth: "4",
+    "4": "4",
+    five: "5",
+    fifth: "5",
+    "5": "5",
+    six: "6",
+    sixth: "6",
+    "6": "6",
+    seven: "7",
+    seventh: "7",
+    "7": "7",
+    eight: "8",
+    eighth: "8",
+    "8": "8",
+    nine: "9",
+    ninth: "9",
+    "9": "9",
+    ten: "10",
+    tenth: "10",
+    "10": "10"
   };
   function normalize(text) {
-    return text.toLowerCase().replace(/\bcan['’]t\b/g, "can not").replace(/\bwon['’]t\b/g, "will not").replace(/n['’]t\b/g, " not").replace(/['’]m\b/g, " am").replace(/['’](re|s|ve|ll|d)\b/g, "").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
-  }
-  function lookup(w) {
-    if (IRREGULAR[w]) return IRREGULAR[w];
-    const up = w.toUpperCase();
-    const tries = [up];
-    if (w.length < 4) return V.has(up) ? up : null;
-    if (w.endsWith("ing")) tries.push(up.slice(0, -3), up.slice(0, -3) + "E");
-    if (w.endsWith("es")) tries.push(up.slice(0, -2));
-    if (w.endsWith("s")) tries.push(up.slice(0, -1));
-    if (w.endsWith("ed")) tries.push(up.slice(0, -2), up.slice(0, -1));
-    return tries.find((t) => V.has(t)) || null;
-  }
-  function spell(word) {
-    return [...word.toUpperCase()].map((c) => ({
-      kind: /\d/.test(c) ? "digit" : "letter",
-      label: c,
-      clip: c,
-      group: word.toUpperCase()
-    }));
+    return (text || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   }
   function textToSigns(text) {
-    const tokens = normalize(text), signs = [];
-    for (let i = 0; i < tokens.length; ) {
-      let hit = null;
-      for (const n of [3, 2]) {
-        const key = tokens.slice(i, i + n).join("_").toUpperCase();
-        if (i + n <= tokens.length && V.has(key)) {
-          hit = { key, n };
-          break;
+    const tokens = normalize(text);
+    const signs = [];
+    for (const t of tokens) {
+      if (WORD_TO_NUM[t] !== void 0) {
+        const num = WORD_TO_NUM[t];
+        signs.push({ kind: "digit", label: num, clip: num });
+      } else if (/^\d+$/.test(t)) {
+        for (const d of t) {
+          if (WORD_TO_NUM[d] !== void 0) {
+            signs.push({ kind: "digit", label: d, clip: d });
+          }
         }
       }
-      if (hit) {
-        signs.push({ kind: "word", label: hit.key, clip: hit.key });
-        i += hit.n;
-        continue;
-      }
-      const t = tokens[i++];
-      if (STOP.has(t)) continue;
-      const known = lookup(t);
-      if (known) signs.push({ kind: "word", label: known, clip: known });
-      else signs.push(...spell(t));
     }
-    return { signs, gloss: signs.map((s) => s.group || s.label).filter((g, i, a) => g !== a[i - 1]).join(" ") };
+    return {
+      signs,
+      gloss: signs.map((s) => s.label).join(" ")
+    };
   }
 
   // node_modules/three/build/three.core.js
@@ -34336,8 +34285,20 @@ void main() {
   }
 
   // src/avatar.js
-  var norm = (n) => n.toUpperCase().replace(/[\s-]+/g, "_");
-  var NUM = { ZERO: "0", ONE: "1", TWO: "2", THREE: "3", FOUR: "4", FIVE: "5", SIX: "6", SEVEN: "7", EIGHT: "8", NINE: "9" };
+  var norm = (n) => (n || "").toString().toUpperCase().replace(/[\s-]+/g, "_");
+  var NUM = {
+    ZERO: "0",
+    ONE: "1",
+    TWO: "2",
+    THREE: "3",
+    FOUR: "4",
+    FIVE: "5",
+    SIX: "6",
+    SEVEN: "7",
+    EIGHT: "8",
+    NINE: "9",
+    TEN: "10"
+  };
   var clean = (n) => {
     const k = norm(n).replace(/_(ACTION|DEFAULT)$/, "");
     return NUM[k] || k;
@@ -34394,7 +34355,9 @@ void main() {
       root.updateMatrixWorld(true);
       const re = /upper_?arm/i, bones = [];
       root.traverse((o) => {
-        if (o.isBone && re.test(o.name) && !(o.parent && re.test(o.parent.name))) bones.push(o);
+        if (o.isBone && re.test(o.name) && !(o.parent && re.test(o.parent.name))) {
+          bones.push(o);
+        }
       });
       for (const b of bones) {
         const kid = b.children.find((k) => k.isBone);
@@ -34404,7 +34367,7 @@ void main() {
         const target = new Vector3(Math.sign(dir.x) * 0.3, -1, 0).normalize();
         const delta = new Quaternion().setFromUnitVectors(dir, target);
         const bw = b.getWorldQuaternion(new Quaternion());
-        const pw = b.parent.getWorldQuaternion(new Quaternion());
+        const pw = b.parent ? b.parent.getWorldQuaternion(new Quaternion()) : new Quaternion();
         b.quaternion.copy(pw.invert().multiply(delta).multiply(bw));
         b.updateMatrixWorld(true);
       }
@@ -34415,6 +34378,7 @@ void main() {
       try {
         const gltf = await new GLTFLoader().loadAsync(url);
         this.scene.add(gltf.scene);
+        this.gltfScene = gltf.scene;
         this.lowerArms(gltf.scene);
         gltf.scene.traverse((o) => {
           if (o.isSkinnedMesh) {
@@ -34422,7 +34386,9 @@ void main() {
             o.computeBoundingBox();
           }
         });
-        const box = new Box3().setFromObject(gltf.scene), size = box.getSize(new Vector3()), c = box.getCenter(new Vector3());
+        const box = new Box3().setFromObject(gltf.scene);
+        const size = box.getSize(new Vector3());
+        const c = box.getCenter(new Vector3());
         const WAIST = 0.42, top = box.max.y, waistY = box.min.y + size.y * WAIST;
         this.renderer.clippingPlanes = [new Plane(new Vector3(0, 1, 0), -waistY)];
         const visH = Math.max((top - waistY) * 1.15, size.x * 1.2 / this.camera.aspect);
@@ -34431,7 +34397,18 @@ void main() {
         this.camera.position.set(c.x, camY, c.z + dist);
         this.camera.lookAt(c.x, camY, c.z);
         this.mixer = new AnimationMixer(gltf.scene);
-        gltf.animations.forEach((a) => this.clips.set(clean(a.name), a));
+        gltf.animations.forEach((a) => {
+          const rawKey = norm(a.name);
+          const cleanKey = clean(a.name);
+          this.clips.set(rawKey, a);
+          this.clips.set(cleanKey, a);
+          for (const [word, digit] of Object.entries(NUM)) {
+            if (cleanKey === digit || cleanKey === word) {
+              this.clips.set(word, a);
+              this.clips.set(digit, a);
+            }
+          }
+        });
         console.log("[avatar] clips loaded:", [...this.clips.keys()].join(", ") || "NONE");
         this.mode = "glb";
       } catch (e) {
@@ -34443,24 +34420,23 @@ void main() {
       return this.mode;
     }
     has(clip) {
-      return this.mode === "placeholder" || this.clips.has(norm(clip));
+      if (this.mode === "placeholder") return true;
+      const n = norm(clip);
+      return n === "10" || n === "TEN" || this.clips.has(n) || this.clips.has(clean(clip));
     }
     async play(clip, speed = 1, kind = "word") {
       if (this.mode === "none") await this.ready;
       return this.mode === "glb" ? this.playClip(clip, speed) : this.playPlaceholder(clip, speed, kind);
     }
-    async playClip(name, speed) {
-      const clip = this.clips.get(norm(name));
-      if (!clip) {
-        await sleep(400);
-        return false;
-      }
+    async runAction(clip, speed = 1) {
+      if (!clip) return false;
       this.mixer.stopAllAction();
       const a = this.mixer.clipAction(clip);
+      const effectiveSpeed = Math.max(speed, 1.35);
       a.reset().setLoop(LoopOnce, 1);
-      a.clampWhenFinished = true;
-      a.timeScale = speed;
-      a.fadeIn(0.1).play();
+      a.clampWhenFinished = false;
+      a.timeScale = effectiveSpeed;
+      a.fadeIn(0.08).play();
       await Promise.race([
         new Promise((res) => {
           const done = (e) => {
@@ -34471,9 +34447,35 @@ void main() {
           };
           this.mixer.addEventListener("finished", done);
         }),
-        sleep(clip.duration / speed * 1e3 + 600)
+        sleep(clip.duration / effectiveSpeed * 1e3 + 200)
       ]);
       return true;
+    }
+    async playClip(name, speed = 1) {
+      const key = norm(name);
+      if (key === "10" || key === "TEN") {
+        const c1 = this.clips.get("1") || this.clips.get("ONE");
+        const c0 = this.clips.get("0") || this.clips.get("ZERO");
+        if (c1 && c0) {
+          await this.runAction(c1, speed * 1.35);
+          await sleep(60);
+          await this.runAction(c0, speed * 1.35);
+          return true;
+        }
+      }
+      const clip = this.clips.get(key) || this.clips.get(clean(name));
+      if (!clip) {
+        console.warn("[avatar] Clip not found for:", name);
+        await sleep(300);
+        return false;
+      }
+      return this.runAction(clip, speed);
+    }
+    resetRestPose() {
+      if (this.mode === "glb" && this.mixer) {
+        this.mixer.stopAllAction();
+        if (this.gltfScene) this.lowerArms(this.gltfScene);
+      }
     }
     // ---- Placeholder hands (used until isl_hands.glb exists) ----
     buildPlaceholder() {
@@ -34568,7 +34570,7 @@ void main() {
     for (const s of signs) {
       s.el = document.createElement("span");
       s.el.textContent = s.label.replace("_", " ");
-      if (s.kind === "word") {
+      if (s.kind === "word" || s.kind === "digit") {
         s.el.className = "chip";
         box.append(s.el);
         group = null;
@@ -34604,13 +34606,15 @@ void main() {
       s.el?.classList.add("on");
       $("#now").textContent = s.label.replace("_", " ");
       $("#now").dataset.kind = s.kind;
-      await avatar.play(s.clip, settings.speed * (queue.length > 10 ? 1.6 : 1), s.kind);
+      const queueBoost = queue.length > 3 ? 1.7 : queue.length > 0 ? 1.4 : 1.25;
+      await avatar.play(s.clip, settings.speed * queueBoost, s.kind);
       s.el?.classList.remove("on");
       s.el?.classList.add("done");
     }
     busy = false;
     $("#now").textContent = "Ready";
     $("#now").dataset.kind = "idle";
+    avatar.resetRestPose();
   }
   $("#form").addEventListener("submit", (e) => {
     e.preventDefault();

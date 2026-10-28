@@ -1,58 +1,51 @@
-// Rule-based English -> ISL-style gloss. Limited prototype, not full ISL grammar.
-// Every name here must match an animation clip name in isl_hands.glb.
+// ISL Number Sign Dictionary (0-10)
+// Maps English number words, ordinals, and digits (0-10) directly to ISL number clips.
+// Ignores non-number words to keep the avatar focused exclusively on numerical signs.
+
 export const VOCAB = [
-  'HELLO','THANK_YOU','PLEASE','SORRY','YES','NO','NOT','HELP',
-  'I','YOU','MY','NAME','FATHER','MOTHER','FRIEND','TEACHER','STUDENT',
-  'HAVE','WANT','GO','COME','SEE','LIKE','LOVE','LEARN','WORK','EAT','DRINK','VISIT',
-  'SCHOOL','OFFICE','HOME','COMPUTER','SCIENCE','BOOK','WATER','FOOD',
-  'GOOD','MORNING','TODAY','TOMORROW','WHAT','WHERE','HOW','WHY'
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+  'ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN'
 ];
-const V = new Set(VOCAB);
-const STOP = new Set(('is am are was were be been being to the a an of at in on for with and or ' +
-  'that this it as by from do does did will would').split(' '));
-const IRREGULAR = { me: 'I', i: 'I', mine: 'MY', went: 'GO', gone: 'GO', goes: 'GO',
-  ate: 'EAT', drank: 'DRINK', saw: 'SEE', came: 'COME', thanks: 'THANK_YOU' };
+
+const WORD_TO_NUM = {
+  zero: '0', '0': '0',
+  one: '1', first: '1', '1': '1',
+  two: '2', second: '2', '2': '2',
+  three: '3', third: '3', '3': '3',
+  four: '4', fourth: '4', '4': '4',
+  five: '5', fifth: '5', '5': '5',
+  six: '6', sixth: '6', '6': '6',
+  seven: '7', seventh: '7', '7': '7',
+  eight: '8', eighth: '8', '8': '8',
+  nine: '9', ninth: '9', '9': '9',
+  ten: '10', tenth: '10', '10': '10'
+};
 
 function normalize(text) {
-  return text.toLowerCase()
-    .replace(/\bcan['’]t\b/g, 'can not').replace(/\bwon['’]t\b/g, 'will not')
-    .replace(/n['’]t\b/g, ' not').replace(/['’]m\b/g, ' am')
-    .replace(/['’](re|s|ve|ll|d)\b/g, '')
-    .replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
-}
-
-function lookup(w) {
-  if (IRREGULAR[w]) return IRREGULAR[w];
-  const up = w.toUpperCase();
-  const tries = [up];
-  if (w.length < 4) return V.has(up) ? up : null;
-  if (w.endsWith('ing')) tries.push(up.slice(0, -3), up.slice(0, -3) + 'E');
-  if (w.endsWith('es')) tries.push(up.slice(0, -2));
-  if (w.endsWith('s')) tries.push(up.slice(0, -1));
-  if (w.endsWith('ed')) tries.push(up.slice(0, -2), up.slice(0, -1));
-  return tries.find(t => V.has(t)) || null;
-}
-
-function spell(word) {
-  return [...word.toUpperCase()].map(c => ({
-    kind: /\d/.test(c) ? 'digit' : 'letter', label: c, clip: c, group: word.toUpperCase()
-  }));
+  return (text || '').toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
 }
 
 export function textToSigns(text) {
-  const tokens = normalize(text), signs = [];
-  for (let i = 0; i < tokens.length;) {
-    let hit = null;
-    for (const n of [3, 2]) {
-      const key = tokens.slice(i, i + n).join('_').toUpperCase();
-      if (i + n <= tokens.length && V.has(key)) { hit = { key, n }; break; }
+  const tokens = normalize(text);
+  const signs = [];
+  for (const t of tokens) {
+    if (WORD_TO_NUM[t] !== undefined) {
+      const num = WORD_TO_NUM[t];
+      signs.push({ kind: 'digit', label: num, clip: num });
+    } else if (/^\d+$/.test(t)) {
+      // Multi-digit numbers split into constituent 0-9 digits
+      for (const d of t) {
+        if (WORD_TO_NUM[d] !== undefined) {
+          signs.push({ kind: 'digit', label: d, clip: d });
+        }
+      }
     }
-    if (hit) { signs.push({ kind: 'word', label: hit.key, clip: hit.key }); i += hit.n; continue; }
-    const t = tokens[i++];
-    if (STOP.has(t)) continue;
-    const known = lookup(t);
-    if (known) signs.push({ kind: 'word', label: known, clip: known });
-    else signs.push(...spell(t));
   }
-  return { signs, gloss: signs.map(s => s.group || s.label).filter((g, i, a) => g !== a[i - 1]).join(' ') };
+  return {
+    signs,
+    gloss: signs.map(s => s.label).join(' ')
+  };
 }
